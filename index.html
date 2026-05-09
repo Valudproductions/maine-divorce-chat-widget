@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Maine Divorce AI Assistant</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -30,19 +32,19 @@
     }
 
     .header {
-      padding: 24px 20px;
+      padding: 26px 20px;
       background: linear-gradient(135deg, #111827, #1f2937);
       color: white;
       text-align: center;
     }
 
     .header h1 {
-      font-size: 26px;
+      font-size: 28px;
       margin-bottom: 8px;
     }
 
     .header p {
-      font-size: 14px;
+      font-size: 15px;
       color: #d1d5db;
       line-height: 1.5;
     }
@@ -68,18 +70,19 @@
     }
 
     .bubble {
-      max-width: 78%;
-      padding: 15px 17px;
+      max-width: 82%;
+      padding: 16px 18px;
       border-radius: 18px;
-      line-height: 1.6;
-      font-size: 15px;
-      white-space: pre-wrap;
+      line-height: 1.75;
+      font-size: 15.5px;
+      word-wrap: break-word;
     }
 
     .user .bubble {
       background: #111827;
       color: white;
       border-bottom-right-radius: 5px;
+      white-space: pre-wrap;
     }
 
     .bot .bubble {
@@ -89,8 +92,42 @@
       border-bottom-left-radius: 5px;
     }
 
+    .bot .bubble h1,
+    .bot .bubble h2,
+    .bot .bubble h3 {
+      margin: 18px 0 10px;
+      line-height: 1.35;
+    }
+
+    .bot .bubble p {
+      margin-bottom: 12px;
+    }
+
+    .bot .bubble ul,
+    .bot .bubble ol {
+      padding-left: 24px;
+      margin: 10px 0 14px;
+    }
+
+    .bot .bubble li {
+      margin-bottom: 10px;
+    }
+
+    .bot .bubble strong {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .sources-title {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+      font-weight: 700;
+      color: #111827;
+    }
+
     .sources {
-      margin-top: 14px;
+      margin-top: 10px;
       display: grid;
       gap: 10px;
     }
@@ -98,16 +135,19 @@
     .source-card {
       background: #f8fafc;
       border: 1px solid #dbeafe;
+      border-left: 4px solid #2563eb;
       border-radius: 12px;
-      padding: 12px;
-      font-size: 13px;
+      padding: 12px 14px;
+      font-size: 13.5px;
       color: #1f2937;
+      line-height: 1.55;
     }
 
     .source-card strong {
       display: block;
       color: #111827;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      font-size: 14px;
     }
 
     .composer {
@@ -124,8 +164,8 @@
 
     textarea {
       flex: 1;
-      min-height: 48px;
-      max-height: 140px;
+      min-height: 52px;
+      max-height: 150px;
       resize: none;
       padding: 14px;
       border-radius: 14px;
@@ -143,14 +183,14 @@
       border: none;
       cursor: pointer;
       border-radius: 14px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .send-btn {
       background: #111827;
       color: white;
       padding: 14px 20px;
-      min-height: 48px;
+      min-height: 52px;
     }
 
     .send-btn:disabled {
@@ -159,7 +199,7 @@
     }
 
     .cta {
-      margin-top: 12px;
+      margin-top: 14px;
       text-align: center;
     }
 
@@ -168,27 +208,28 @@
       background: #2563eb;
       color: white;
       text-decoration: none;
-      padding: 11px 18px;
+      padding: 11px 20px;
       border-radius: 999px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .suggestions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 14px;
+      margin: 18px 0 20px;
       justify-content: center;
     }
 
     .suggestion {
       background: #eef2ff;
       color: #1e3a8a;
-      padding: 8px 11px;
+      padding: 9px 13px;
       border-radius: 999px;
       font-size: 13px;
       cursor: pointer;
+      border: 1px solid #dbeafe;
     }
 
     .typing {
@@ -238,7 +279,7 @@
       }
 
       .header h1 {
-        font-size: 21px;
+        font-size: 22px;
       }
 
       .chat-area {
@@ -246,7 +287,7 @@
       }
 
       .bubble {
-        max-width: 90%;
+        max-width: 94%;
         font-size: 14px;
       }
 
@@ -271,11 +312,11 @@
     <div class="chat-area" id="chatArea">
       <div class="message-row bot">
         <div class="bubble">
-Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, divorce process, custody, parenting, mediation, or financial considerations.
+          Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, divorce process, custody, parenting, mediation, or financial considerations.
         </div>
       </div>
 
-      <div class="suggestions">
+      <div class="suggestions" id="suggestions">
         <div class="suggestion" onclick="useSuggestion('According to the course, how does child custody usually work during divorce?')">Child custody</div>
         <div class="suggestion" onclick="useSuggestion('What financial mistakes should people avoid during divorce?')">Financial mistakes</div>
         <div class="suggestion" onclick="useSuggestion('According to the course, what should someone think about before signing a prenuptial agreement?')">Prenuptial agreement</div>
@@ -304,6 +345,12 @@ Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, d
     const chatArea = document.getElementById("chatArea");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
+    const suggestions = document.getElementById("suggestions");
+
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    });
 
     userInput.addEventListener("keydown", function(event) {
       if (event.key === "Enter" && !event.shiftKey) {
@@ -323,9 +370,19 @@ Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, d
 
       const bubble = document.createElement("div");
       bubble.className = "bubble";
-      bubble.innerText = text;
 
-      if (sources && sources.length > 0) {
+      if (role === "bot") {
+        bubble.innerHTML = marked.parse(text || "");
+      } else {
+        bubble.innerText = text || "";
+      }
+
+      if (role === "bot" && sources && sources.length > 0) {
+        const title = document.createElement("div");
+        title.className = "sources-title";
+        title.innerText = "Sources Referenced";
+        bubble.appendChild(title);
+
         const sourcesBox = document.createElement("div");
         sourcesBox.className = "sources";
 
@@ -334,10 +391,9 @@ Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, d
           card.className = "source-card";
 
           card.innerHTML = `
-            <strong>Source ${index + 1}: ${escapeHtml(source.video_title || "Course Source")}</strong>
-            Module: ${escapeHtml(source.module_name || "N/A")}<br>
-            Section: ${escapeHtml(source.section_name || "N/A")}<br>
-            Video: ${escapeHtml(source.video_number || "N/A")}
+            <strong>${escapeHtml(source.video_title || "Course Source")}</strong>
+            ${escapeHtml(source.module_name || "N/A")} → ${escapeHtml(source.section_name || "N/A")}<br>
+            Video ${escapeHtml(source.video_number || "N/A")}
           `;
 
           sourcesBox.appendChild(card);
@@ -383,6 +439,10 @@ Hi, I’m your Maine Divorce AI Assistant. Ask me a question about the course, d
       const question = userInput.value.trim();
 
       if (!question) return;
+
+      if (suggestions) {
+        suggestions.style.display = "none";
+      }
 
       addMessage("user", question);
       userInput.value = "";
